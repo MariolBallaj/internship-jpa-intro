@@ -5,10 +5,16 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "employee")
@@ -28,15 +34,19 @@ public class Employee {
     @Column(name = "middle_name")
     private String middleName;
 
-    @Column(name = "email", nullable = false)
-    private String email;
+    @OneToOne(mappedBy = "employee")
+    private EmployeeDetails employeeDetails;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @OneToMany(mappedBy = "employee")
+    private List<Booking> bookings;
 
-    @Column(name = "employment_date", nullable = false)
-    @Temporal(value = TemporalType.DATE)
-    private Date employmentDate;
+    @ManyToMany
+    @JoinTable(
+         name = "user_role",
+         joinColumns = @JoinColumn(name = "employee_id", referencedColumnName = "id"),
+         inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    private Set<Role> roles;
 
     public Integer getId() {
         return id;
@@ -70,28 +80,39 @@ public class Employee {
         this.middleName = middleName;
     }
 
-    public String getEmail() {
-        return email;
+    public EmployeeDetails getEmployeeDetails() {
+        return employeeDetails;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmployeeDetails(EmployeeDetails employeeDetails) {
+        this.employeeDetails = employeeDetails;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public List<Booking> getBookings() {
+        if (bookings == null) {
+            bookings = new ArrayList<>();
+        }
+        return bookings;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public Set<Role> getRoles() {
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+        return roles;
     }
 
-    public Date getEmploymentDate() {
-        return employmentDate;
-    }
-
-    public void setEmploymentDate(Date employmentDate) {
-        this.employmentDate = employmentDate;
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", employeeDetails=" + employeeDetails +
+                ", bookings=" + bookings +
+                ", roles=" + roles +
+                '}';
     }
 
 }
